@@ -1,0 +1,217 @@
+{
+  "app": {
+    "name": "Pearl Detergent DWMS",
+    "description": "የዲተርጀንት የጅምላ አስተዳደር ስርዓት",
+    "headOffice": "ዋና መስሪያ ቤት"
+  },
+
+  "common": {
+    "language": "ቋንቋ",
+    "english": "English",
+    "amharic": "አማርኛ",
+    "oromo": "Afaan Oromo",
+
+    "search": "ፈልግ",
+    "filter": "አጣራ",
+    "reset": "ዳግም አስጀምር",
+    "refresh": "አድስ",
+
+    "add": "ጨምር",
+    "create": "ፍጠር",
+    "save": "አስቀምጥ",
+    "update": "አዘምን",
+    "edit": "አርትዕ",
+    "delete": "ሰርዝ",
+    "remove": "አስወግድ",
+    "view": "እይ",
+    "details": "ዝርዝር",
+
+    "submit": "አስገባ",
+    "cancel": "ሰርዝ",
+    "close": "ዝጋ",
+    "confirm": "አረጋግጥ",
+
+    "status": "ሁኔታ",
+    "active": "ንቁ",
+    "inactive": "የማይሰራ",
+
+    "actions": "እርምጃዎች",
+    "yes": "አዎ",
+    "no": "አይ",
+
+    "account": "መለያ",
+    "notifications": "ማሳወቂያዎች",
+    "logout": "ውጣ",
+    "loggedOut": "በተሳካ ሁኔታ ወጥተዋል",
+    "logoutFailed": "መውጣት አልተሳካም",
+
+    "user": "ተጠቃሚ",
+    "email": "ኢሜይል",
+    "phone": "ስልክ",
+    "role": "ሚና",
+    "noRole": "ሚና የለም",
+    "noEmail": "ኢሜይል የለም",
+
+    "loading": "በመጫን ላይ...",
+    "noData": "መረጃ የለም",
+    "success": "ክንውኑ በተሳካ ሁኔታ ተጠናቋል",
+    "error": "ችግኝ ተፈጥሯል"
+  },
+
+  "nav": {
+    "dashboard": "ዳሽቦርድ",
+    "sales": "ሽያጭ",
+    "administration": "አስተዳደር",
+
+    "customersDistributors": "ደንበኞች / አከፋፋዮች",
+    "users": "ተጠቃሚዎች",
+    "roles": "ሚናዎች",
+    "permissions": "ፈቃዶች",
+
+    "branches": "ቅርንጫፎች",
+    "suppliers": "አቅራቢዎች",
+    "products": "ምርቶች",
+    "warehouses": "መጋዘኖች",
+
+    "inventory": "ክምችት",
+    "stockMovements": "የክምችት እንቅስቃሴ",
+    "purchaseOrders": "የግዥ ትዕዛዞች",
+
+    "reports": "ሪፖርቶች",
+    "auditLogs": "የኦዲት መዝገቦች",
+    "systemSettings": "የስርዓት ቅንብሮች"
+  },
+
+  "auth": {
+    "login": "ግባ",
+    "logout": "ውጣ",
+    "rememberMe": "አስታውሰኝ",
+    "forgotPassword": "የይለፍ ቃል ረስተዋል?",
+    "resetPassword": "የይለፍ ቃል ዳግም ያዘጋጁ",
+    "confirmPassword": "የይለፍ ቃል አረጋግጥ",
+    "invalidCredentials": "የግባ መረጃ ትክክል አይደለም"
+  },
+
+  "dashboard": {
+    "title": "ዳሽቦርድ",
+    "welcome": "እንኳን ደህና መጡ",
+    "totalSales": "ጠቅላላ ሽያጭ",
+    "totalCustomers": "ጠቅላላ ደንበኞች",
+    "totalProducts": "ጠቅላላ ምርቶች",
+    "totalSuppliers": "ጠቅላላ አቅራቢዎች",
+    "lowStockItems": "ዝቅተኛ ክምችት ያላቸው እቃዎች",
+    "recentTransactions": "የቅርብ ጊዜ ግብይቶች"
+  },
+
+  "users": {
+    "title": "የተጠቃሚ አስተዳደር",
+    "createUser": "ተጠቃሚ ፍጠር",
+    "editUser": "ተጠቃሚ አርትዕ",
+    "deleteUser": "ተጠቃሚ ሰርዝ",
+    "userDetails": "የተጠቃሚ ዝርዝር"
+  },
+
+  "roles": {
+    "title": "የሚና አስተዳደር",
+    "assignPermissions": "ፈቃዶችን መድብ",
+    "createRole": "ሚና ፍጠር"
+  },
+
+  "permissions": {
+    "title": "የፈቃድ አስተዳደር",
+    "permissionName": "የፈቃድ ስም",
+    "module": "ሞጁል"
+  },
+
+  "branches": {
+    "title": "የቅርንጫፍ አስተዳደር",
+    "createBranch": "ቅርንጫፍ ፍጠር",
+    "editBranch": "ቅርንጫፍ አርትዕ",
+    "branchName": "የቅርንጫፍ ስም",
+    "branchCode": "የቅርንጫፍ ኮድ",
+    "branchAddress": "የቅርንጫፍ አድራሻ"
+  },
+
+  "customers": {
+    "title": "ደንበኞች",
+    "createCustomer": "ደንበኛ ፍጠር",
+    "editCustomer": "ደንበኛ አርትዕ",
+    "customerName": "የደንበኛ ስም",
+    "customerType": "የደንበኛ አይነት",
+    "balance": "ቀሪ ሂሳብ"
+  },
+
+  "suppliers": {
+    "title": "አቅራቢዎች",
+    "createSupplier": "አቅራቢ ፍጠር",
+    "editSupplier": "አቅራቢ አርትዕ",
+    "supplierName": "የአቅራቢ ስም",
+    "contactPerson": "የግንኙነት ሰው"
+  },
+
+  "products": {
+    "title": "ምርቶች",
+    "createProduct": "ምርት ፍጠር",
+    "editProduct": "ምርት አርትዕ",
+    "productName": "የምርት ስም",
+    "productCode": "የምርት ኮድ",
+    "category": "ምድብ",
+    "price": "ዋጋ",
+    "unit": "መለኪያ"
+  },
+
+  "warehouses": {
+    "title": "መጋዘኖች",
+    "createWarehouse": "መጋዘን ፍጠር",
+    "editWarehouse": "መጋዘን አርትዕ",
+    "warehouseName": "የመጋዘን ስም",
+    "warehouseCode": "የመጋዘን ኮድ"
+  },
+
+  "inventory": {
+    "title": "ክምችት",
+    "currentStock": "ያለው ክምችት",
+    "stockIn": "ክምችት ግባ",
+    "stockOut": "ክምችት ውጣ",
+    "adjustment": "ማስተካከያ",
+    "transfer": "ማስተላለፍ"
+  },
+
+  "purchaseOrders": {
+    "title": "የግዥ ትዕዛዞች",
+    "createPurchaseOrder": "የግዥ ትዕዛዝ ፍጠር",
+    "orderNumber": "የትዕዛዝ ቁጥር",
+    "orderDate": "የትዕዛዝ ቀን",
+    "receiveOrder": "ትዕዛዝ ተቀበል"
+  },
+
+  "stockMovements": {
+    "title": "የክምችት እንቅስቃሴ",
+    "movementType": "የእንቅስቃሴ አይነት",
+    "reference": "ማጣቀሻ",
+    "quantity": "መጠን",
+    "movementDate": "የእንቅስቃሴ ቀን"
+  },
+
+  "reports": {
+    "title": "ሪፖርቶች",
+    "salesReport": "የሽያጭ ሪፖርት",
+    "inventoryReport": "የክምችት ሪፖርት",
+    "supplierReport": "የአቅራቢ ሪፖርት",
+    "customerReport": "የደንበኛ ሪፖርት"
+  },
+
+  "auditLogs": {
+    "title": "የኦዲት መዝገቦች",
+    "action": "እርምጃ",
+    "performedBy": "ያከናወነ",
+    "timestamp": "ጊዜ"
+  },
+
+  "settings": {
+    "title": "የስርዓት ቅንብሮች",
+    "generalSettings": "አጠቃላይ ቅንብሮች",
+    "securitySettings": "የደህንነት ቅንብሮች",
+    "languageSettings": "የቋንቋ ቅንብሮች"
+  }
+}

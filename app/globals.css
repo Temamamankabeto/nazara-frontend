@@ -1,0 +1,16 @@
+@import '../styles/tailwind.css';
+@import '../styles/variables.css';
+@import '../styles/theme.css';
+@import "tw-animate-css";
+
+
+@layer base {
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}

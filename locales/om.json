@@ -1,0 +1,217 @@
+{
+  "app": {
+    "name": "Pearl Detergent DWMS",
+    "description": "Sirna bulchiinsa daldala jumlaa dhiqaa",
+    "headOffice": "Waajjira Muummee"
+  },
+
+  "common": {
+    "language": "Afaan",
+    "english": "English",
+    "amharic": "አማርኛ",
+    "oromo": "Afaan Oromo",
+
+    "search": "Barbaadi",
+    "filter": "Calali",
+    "reset": "Haquu",
+    "refresh": "Haaromsuu",
+
+    "add": "Dabali",
+    "create": "Uumi",
+    "save": "Olkaa'i",
+    "update": "Haaromsi",
+    "edit": "Gulaali",
+    "delete": "Haqi",
+    "remove": "Balleessi",
+    "view": "Ilaali",
+    "details": "Bal'ina",
+
+    "submit": "Galchi",
+    "cancel": "Dhiisi",
+    "close": "Cufi",
+    "confirm": "Mirkaneessi",
+
+    "status": "Haala",
+    "active": "Socho'aa",
+    "inactive": "Hin sochoone",
+
+    "actions": "Gochaalee",
+    "yes": "Eeyyee",
+    "no": "Lakki",
+
+    "account": "Herrega",
+    "notifications": "Beeksisoota",
+    "logout": "Ba'i",
+    "loggedOut": "Milkaa'inaan baateetta",
+    "logoutFailed": "Ba'uun hin milkoofne",
+
+    "user": "Fayyadamaa",
+    "email": "Imeelii",
+    "phone": "Bilbila",
+    "role": "Gahee",
+    "noRole": "Gaheen hin jiru",
+    "noEmail": "Imeeliin hin jiru",
+
+    "loading": "Fe'amaa jira...",
+    "noData": "Odeeffannoon hin jiru",
+    "success": "Hojii milkaa'inaan xumurame",
+    "error": "Dogongorri uumame"
+  },
+
+  "nav": {
+    "dashboard": "Daashboordii",
+    "sales": "Gurgurtaa",
+    "administration": "Bulchiinsa",
+
+    "customersDistributors": "Maamiloota / Raabsitoota",
+    "users": "Fayyadamtoota",
+    "roles": "Gaheewwan",
+    "permissions": "Hayyamoota",
+
+    "branches": "Dameewwan",
+    "suppliers": "Dhiyeessitoota",
+    "products": "Omishoota",
+    "warehouses": "Kuusawwan",
+
+    "inventory": "Kuusaa",
+    "stockMovements": "Sochii Kuusaa",
+    "purchaseOrders": "Ajaja Bittaa",
+
+    "reports": "Gabaasota",
+    "auditLogs": "Galmeewwan Odiitii",
+    "systemSettings": "Qindaa'ina Sirnaa"
+  },
+
+  "auth": {
+    "login": "Seeni",
+    "logout": "Ba'i",
+    "rememberMe": "Na yaadadhu",
+    "forgotPassword": "Jecha icciitii dagatteettaa?",
+    "resetPassword": "Jecha icciitii haaromsi",
+    "confirmPassword": "Jecha icciitii mirkaneessi",
+    "invalidCredentials": "Odeeffannoon galmee sirrii miti"
+  },
+
+  "dashboard": {
+    "title": "Daashboordii",
+    "welcome": "Baga nagaan dhuftan",
+    "totalSales": "Gurgurtaa waliigalaa",
+    "totalCustomers": "Maamiloota waliigalaa",
+    "totalProducts": "Omishoota waliigalaa",
+    "totalSuppliers": "Dhiyeessitoota waliigalaa",
+    "lowStockItems": "Meeshaalee kuusaan isaanii gadi bu'e",
+    "recentTransactions": "Sochiiwwan dhiyoo"
+  },
+
+  "users": {
+    "title": "Bulchiinsa Fayyadamtootaa",
+    "createUser": "Fayyadamaa uumi",
+    "editUser": "Fayyadamaa gulaali",
+    "deleteUser": "Fayyadamaa haqi",
+    "userDetails": "Bal'ina fayyadamaa"
+  },
+
+  "roles": {
+    "title": "Bulchiinsa Gahee",
+    "assignPermissions": "Hayyama ramadi",
+    "createRole": "Gahee uumi"
+  },
+
+  "permissions": {
+    "title": "Bulchiinsa Hayyamaa",
+    "permissionName": "Maqaa hayyamaa",
+    "module": "Mojuulii"
+  },
+
+  "branches": {
+    "title": "Bulchiinsa Damee",
+    "createBranch": "Damee uumi",
+    "editBranch": "Damee gulaali",
+    "branchName": "Maqaa damee",
+    "branchCode": "Koodii damee",
+    "branchAddress": "Teessoo damee"
+  },
+
+  "customers": {
+    "title": "Maamiloota",
+    "createCustomer": "Maamila uumi",
+    "editCustomer": "Maamila gulaali",
+    "customerName": "Maqaa maamila",
+    "customerType": "Gosa maamila",
+    "balance": "Haftee herregaa"
+  },
+
+  "suppliers": {
+    "title": "Dhiyeessitoota",
+    "createSupplier": "Dhiyeessaa uumi",
+    "editSupplier": "Dhiyeessaa gulaali",
+    "supplierName": "Maqaa dhiyeessaa",
+    "contactPerson": "Nama quunnamtii"
+  },
+
+  "products": {
+    "title": "Omishoota",
+    "createProduct": "Omisha uumi",
+    "editProduct": "Omisha gulaali",
+    "productName": "Maqaa omishaa",
+    "productCode": "Koodii omishaa",
+    "category": "Ramaddii",
+    "price": "Gatii",
+    "unit": "Safartuu"
+  },
+
+  "warehouses": {
+    "title": "Kuusawwan",
+    "createWarehouse": "Kuusaa uumi",
+    "editWarehouse": "Kuusaa gulaali",
+    "warehouseName": "Maqaa kuusaa",
+    "warehouseCode": "Koodii kuusaa"
+  },
+
+  "inventory": {
+    "title": "Kuusaa",
+    "currentStock": "Kuusaa amma jiru",
+    "stockIn": "Kuusaa galuu",
+    "stockOut": "Kuusaa bahuu",
+    "adjustment": "Sirreessuu",
+    "transfer": "Dabarsuu"
+  },
+
+  "purchaseOrders": {
+    "title": "Ajaja Bittaa",
+    "createPurchaseOrder": "Ajaja bittaa uumi",
+    "orderNumber": "Lakkoofsa ajajaa",
+    "orderDate": "Guyyaa ajajaa",
+    "receiveOrder": "Ajaja simadhu"
+  },
+
+  "stockMovements": {
+    "title": "Sochii Kuusaa",
+    "movementType": "Gosa sochii",
+    "reference": "Wabii",
+    "quantity": "Baay'ina",
+    "movementDate": "Guyyaa sochii"
+  },
+
+  "reports": {
+    "title": "Gabaasota",
+    "salesReport": "Gabaasa gurgurtaa",
+    "inventoryReport": "Gabaasa kuusaa",
+    "supplierReport": "Gabaasa dhiyeessaa",
+    "customerReport": "Gabaasa maamila"
+  },
+
+  "auditLogs": {
+    "title": "Galmeewwan Odiitii",
+    "action": "Gocha",
+    "performedBy": "Kan raawwate",
+    "timestamp": "Yeroo"
+  },
+
+  "settings": {
+    "title": "Qindaa'ina Sirnaa",
+    "generalSettings": "Qindaa'ina waliigalaa",
+    "securitySettings": "Qindaa'ina nageenyaa",
+    "languageSettings": "Qindaa'ina afaanii"
+  }
+}

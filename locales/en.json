@@ -1,0 +1,217 @@
+{
+  "app": {
+    "name": "Pearl Detergent DWMS",
+    "description": "Detergent Wholesale Management System",
+    "headOffice": "Head Office"
+  },
+
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "amharic": "Amharic",
+    "oromo": "Afaan Oromo",
+
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "refresh": "Refresh",
+
+    "add": "Add",
+    "create": "Create",
+    "save": "Save",
+    "update": "Update",
+    "edit": "Edit",
+    "delete": "Delete",
+    "remove": "Remove",
+    "view": "View",
+    "details": "Details",
+
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "No",
+
+    "account": "Account",
+    "notifications": "Notifications",
+    "logout": "Log out",
+    "loggedOut": "Logged out successfully",
+    "logoutFailed": "Logout failed",
+
+    "user": "User",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "noRole": "No role",
+    "noEmail": "No email",
+
+    "loading": "Loading...",
+    "noData": "No data available",
+    "success": "Operation completed successfully",
+    "error": "Something went wrong"
+  },
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "sales": "Sales",
+    "administration": "Administration",
+
+    "customersDistributors": "Customers / Distributors",
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+
+    "branches": "Branches",
+    "suppliers": "Suppliers",
+    "products": "Products",
+    "warehouses": "Warehouses",
+
+    "inventory": "Inventory",
+    "stockMovements": "Stock Movements",
+    "purchaseOrders": "Purchase Orders",
+
+    "reports": "Reports",
+    "auditLogs": "Audit Logs",
+    "systemSettings": "System Settings"
+  },
+
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "confirmPassword": "Confirm password",
+    "invalidCredentials": "Invalid credentials"
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "totalSales": "Total Sales",
+    "totalCustomers": "Total Customers",
+    "totalProducts": "Total Products",
+    "totalSuppliers": "Total Suppliers",
+    "lowStockItems": "Low Stock Items",
+    "recentTransactions": "Recent Transactions"
+  },
+
+  "users": {
+    "title": "User Management",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "deleteUser": "Delete User",
+    "userDetails": "User Details"
+  },
+
+  "roles": {
+    "title": "Role Management",
+    "assignPermissions": "Assign Permissions",
+    "createRole": "Create Role"
+  },
+
+  "permissions": {
+    "title": "Permission Management",
+    "permissionName": "Permission Name",
+    "module": "Module"
+  },
+
+  "branches": {
+    "title": "Branch Management",
+    "createBranch": "Create Branch",
+    "editBranch": "Edit Branch",
+    "branchName": "Branch Name",
+    "branchCode": "Branch Code",
+    "branchAddress": "Branch Address"
+  },
+
+  "customers": {
+    "title": "Customers",
+    "createCustomer": "Create Customer",
+    "editCustomer": "Edit Customer",
+    "customerName": "Customer Name",
+    "customerType": "Customer Type",
+    "balance": "Balance"
+  },
+
+  "suppliers": {
+    "title": "Suppliers",
+    "createSupplier": "Create Supplier",
+    "editSupplier": "Edit Supplier",
+    "supplierName": "Supplier Name",
+    "contactPerson": "Contact Person"
+  },
+
+  "products": {
+    "title": "Products",
+    "createProduct": "Create Product",
+    "editProduct": "Edit Product",
+    "productName": "Product Name",
+    "productCode": "Product Code",
+    "category": "Category",
+    "price": "Price",
+    "unit": "Unit"
+  },
+
+  "warehouses": {
+    "title": "Warehouses",
+    "createWarehouse": "Create Warehouse",
+    "editWarehouse": "Edit Warehouse",
+    "warehouseName": "Warehouse Name",
+    "warehouseCode": "Warehouse Code"
+  },
+
+  "inventory": {
+    "title": "Inventory",
+    "currentStock": "Current Stock",
+    "stockIn": "Stock In",
+    "stockOut": "Stock Out",
+    "adjustment": "Adjustment",
+    "transfer": "Transfer"
+  },
+
+  "purchaseOrders": {
+    "title": "Purchase Orders",
+    "createPurchaseOrder": "Create Purchase Order",
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "receiveOrder": "Receive Order"
+  },
+
+  "stockMovements": {
+    "title": "Stock Movements",
+    "movementType": "Movement Type",
+    "reference": "Reference",
+    "quantity": "Quantity",
+    "movementDate": "Movement Date"
+  },
+
+  "reports": {
+    "title": "Reports",
+    "salesReport": "Sales Report",
+    "inventoryReport": "Inventory Report",
+    "supplierReport": "Supplier Report",
+    "customerReport": "Customer Report"
+  },
+
+  "auditLogs": {
+    "title": "Audit Logs",
+    "action": "Action",
+    "performedBy": "Performed By",
+    "timestamp": "Timestamp"
+  },
+
+  "settings": {
+    "title": "System Settings",
+    "generalSettings": "General Settings",
+    "securitySettings": "Security Settings",
+    "languageSettings": "Language Settings"
+  }
+}

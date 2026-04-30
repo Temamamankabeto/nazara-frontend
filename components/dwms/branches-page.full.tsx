@@ -1,0 +1,429 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { Building2, Edit, MoreHorizontal, Search } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+
+import {
+  useCreateBranchMutation,
+  useUpdateBranchMutation,
+} from '@/hooks/use-branches';
+import { useBranchesQuery } from '@/queries/branch.queries';
+import type { BranchFormPayload, BranchRow } from '@/types/branch.types';
+
+const initialForm = {
+  name: '',
+  code: '',
+  phone: '',
+  email: '',
+  address: '',
+  is_active: true,
+};
+
+export default function BranchesPage() {
+  const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<BranchRow | null>(null);
+  const [form, setForm] = useState(initialForm);
+
+  const filters = { page, per_page: 10, search };
+
+  const branchesQuery = useBranchesQuery(filters);
+  const createMutation = useCreateBranchMutation();
+  const updateMutation = useUpdateBranchMutation();
+
+  const rows = branchesQuery.data?.data ?? [];
+  const meta = branchesQuery.data?.meta ?? {
+    current_page: page,
+    per_page: 10,
+    total: 0,
+    last_page: 1,
+  };
+
+  const stats = useMemo(
+    () => ({
+      total: meta.total,
+      active: rows.filter((row) => row.is_active).length,
+      inactive: rows.filter((row) => !row.is_active).length,
+    }),
+    [rows, meta.total]
+  );
+
+  function openCreateDialog() {
+    setEditing(null);
+    setForm(initialForm);
+    setOpen(true);
+  }
+
+  function openEditDialog(branch: BranchRow) {
+    setEditing(branch);
+    setForm({
+      name: branch.name ?? '',
+      code: branch.code ?? '',
+      phone: branch.phone ?? '',
+      email: branch.email ?? '',
+      address: branch.address ?? '',
+      is_active: branch.is_active ?? true,
+    });
+    setOpen(true);
+  }
+
+  function runSearch() {
+    setPage(1);
+    setSearch(searchInput.trim());
+  }
+
+  async function submitBranch() {
+    const payload: BranchFormPayload = {
+      name: form.name,
+      code: form.code,
+      phone: form.phone || null,
+      email: form.email || null,
+      address: form.address || null,
+      is_active: form.is_active,
+    };
+
+    try {
+      if (editing) {
+        await updateMutation.mutateAsync({
+          id: editing.id,
+          payload,
+        });
+        toast.success('Branch updated successfully');
+      } else {
+        await createMutation.mutateAsync(payload);
+        toast.success('Branch created successfully');
+      }
+
+      setOpen(false);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ??
+          error?.message ??
+          'Could not save branch'
+      );
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Branches</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage Pearl Detergent wholesale branches used by users, suppliers,
+            warehouses, purchases, and sales.
+          </p>
+        </div>
+
+        <Button onClick={openCreateDialog}>Add branch</Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Building2 className="h-4 w-4" />
+              Total branches
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.total}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Active on this page</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.active}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Inactive on this page</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.inactive}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle>Branch list</CardTitle>
+             
+          </div>
+
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search name or code"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              onKeyDown={(event) => event.key === 'Enter' && runSearch()}
+            />
+            <Button variant="outline" size="icon" onClick={runSearch}>
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="rounded-xl border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Branch</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Address</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[70px] text-right">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {branchesQuery.isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5}>Loading branches...</TableCell>
+                  </TableRow>
+                ) : rows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5}>No branches found.</TableCell>
+                  </TableRow>
+                ) : (
+                  rows.map((branch) => (
+                    <TableRow key={branch.id}>
+                      <TableCell>
+                        <div className="font-medium">{branch.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {branch.code}
+                        </div>
+                      </TableCell>
+
+                      <TableCell>
+                        <div>{branch.phone ?? '—'}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {branch.email ?? '—'}
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="max-w-[260px] truncate">
+                        {branch.address ?? '—'}
+                      </TableCell>
+
+                      <TableCell>
+                        <Badge
+                          variant={branch.is_active ? 'default' : 'secondary'}
+                        >
+                          {branch.is_active ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Open actions</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuItem
+                              onClick={() => openEditDialog(branch)}
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+            <span>
+              Page {meta.current_page} of {meta.last_page}
+            </span>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage((value) => value - 1)}
+              >
+                Previous
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= meta.last_page}
+                onClick={() => setPage((value) => value + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {editing ? 'Edit branch' : 'Create branch'}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input
+                value={form.name}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+                placeholder="Main Branch"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Code</Label>
+              <Input
+                value={form.code}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    code: event.target.value.toUpperCase(),
+                  }))
+                }
+                placeholder="MAIN"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Phone</Label>
+              <Input
+                value={form.phone}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    phone: event.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={form.email}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    email: event.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <Label>Address</Label>
+              <Textarea
+                value={form.address}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    address: event.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <label className="flex items-center gap-3 md:col-span-2">
+              <Switch
+                checked={form.is_active}
+                onCheckedChange={(checked) =>
+                  setForm((current) => ({
+                    ...current,
+                    is_active: checked,
+                  }))
+                }
+              />
+              <span className="text-sm">Active branch</span>
+            </label>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+
+            <Button
+              onClick={submitBranch}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {editing ? 'Save changes' : 'Create branch'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
