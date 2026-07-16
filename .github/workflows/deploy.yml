@@ -1,49 +1,99 @@
-name: Deploy Next.js to cPanel
+name: Deploy Nazara Frontend to cPanel
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: nazara-frontend-production
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
+    name: Build and deploy Next.js frontend
     runs-on: ubuntu-latest
 
-    env:
-      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-      NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
-
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Next.js standalone
-        run: npm run build
-
-      - name: Prepare deployment folder
+      - name: Validate production environment
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+          NEXT_PUBLIC_API_TIMEOUT: ${{ secrets.NEXT_PUBLIC_API_TIMEOUT }}
         run: |
-          rm -rf deploy
-          mkdir -p deploy/.next
-          cp -r .next/standalone/* deploy/
-          cp -r .next/static deploy/.next/static
-          if [ -d public ]; then cp -r public deploy/public; fi
-          cp package.json deploy/package.json
+          set -e
 
-      - name: Deploy to cPanel FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+          test -n "$NEXT_PUBLIC_API_URL"
+          test -n "$NEXT_PUBLIC_BACKEND_URL"
+          test -n "$NEXT_PUBLIC_API_TIMEOUT"
+
+          echo "Production environment variables are configured."
+
+      - name: Install dependencies
+        run: |
+          set -e
+          npm ci
+
+      - name: Build Next.js standalone application
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+          NEXT_PUBLIC_API_TIMEOUT: ${{ secrets.NEXT_PUBLIC_API_TIMEOUT }}
+        run: |
+          set -e
+
+          rm -f .env.local
+          rm -f .env.production.local
+
+          npm run build
+
+          test -f .next/standalone/server.js
+          test -f .next/standalone/package.json
+          test -d .next/standalone/node_modules
+          test -d .next/static
+
+      - name: Prepare standalone deployment package
+        run: |
+          set -e
+
+          rm -rf deploy
+          mkdir -p deploy
+
+          cp -a .next/standalone/. deploy/
+
+          mkdir -p deploy/.next/static
+          cp -a .next/static/. deploy/.next/static/
+
+          if [ -d "public" ]; then
+            cp -a public deploy/public
+          fi
+
+          test -f deploy/server.js
+          test -f deploy/package.json
+          test -d deploy/node_modules
+          test -d deploy/.next/static
+
+          echo "Deployment package created successfully."
+
+      - name: Deploy to cPanel using FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
           local-dir: ./deploy/
           server-dir: /
-          dangerous-clean-slate: true
+          dangerous-clean-slate: false
