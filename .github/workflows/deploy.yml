@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           set -e
-          npm ci
+          npm ci --no-audit --no-fund
 
       - name: Build Next.js standalone application
         env:
@@ -53,7 +53,9 @@ jobs:
         run: |
           set -e
 
+          rm -f .env
           rm -f .env.local
+          rm -f .env.production
           rm -f .env.production.local
 
           npm run build
@@ -67,8 +69,8 @@ jobs:
         run: |
           set -e
 
-          rm -rf deploy
-          mkdir -p deploy
+          rm -rf deploy release
+          mkdir -p deploy release
 
           cp -a .next/standalone/. deploy/
 
@@ -79,14 +81,30 @@ jobs:
             cp -a public deploy/public
           fi
 
+          # Never upload environment or local secret files.
+          find deploy -maxdepth 2 -type f \
+            \( -name ".env" \
+            -o -name ".env.*" \
+            -o -name "*.pem" \
+            -o -name "*.key" \
+            -o -name "stderr.log" \) \
+            -delete
+
           test -f deploy/server.js
           test -f deploy/package.json
           test -d deploy/node_modules
           test -d deploy/.next/static
 
-          echo "Deployment package created successfully."
+          cd deploy
+          zip -qr ../release/nazara-frontend-release.zip .
+          cd ..
 
-      - name: Deploy to cPanel using FTP
+          test -f release/nazara-frontend-release.zip
+
+          echo "Release ZIP created:"
+          ls -lh release/nazara-frontend-release.zip
+
+      - name: Deploy release ZIP to cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -94,6 +112,8 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./deploy/
+          local-dir: ./release/
           server-dir: /
+          state-name: .ftp-release-sync-state.json
           dangerous-clean-slate: false
+          log-level: minimal
