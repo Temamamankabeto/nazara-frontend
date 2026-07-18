@@ -36,20 +36,33 @@ jobs:
           rm -rf deploy
           mkdir -p deploy
 
-          # Copy the complete standalone application.
+          # Copy complete standalone application, including hidden .next content.
           cp -a .next/standalone/. deploy/
 
-          # Copy static assets into the standalone .next directory.
+          # Copy static and public assets.
           mkdir -p deploy/.next
           cp -a .next/static deploy/.next/static
 
-          # Copy public assets when available.
           if [ -d "public" ]; then
             cp -a public deploy/public
           fi
 
-          echo "Deployment package prepared:"
-          find deploy -maxdepth 3 -type f | sort | head -200
+          # Guarantee required runtime packages exist.
+          mkdir -p deploy/node_modules
+
+          if [ ! -d "deploy/node_modules/next" ]; then
+            cp -a node_modules/next deploy/node_modules/next
+          fi
+
+          if [ ! -d "deploy/node_modules/react" ]; then
+            cp -a node_modules/react deploy/node_modules/react
+          fi
+
+          if [ ! -d "deploy/node_modules/react-dom" ]; then
+            cp -a node_modules/react-dom deploy/node_modules/react-dom
+          fi
+
+          echo "Deployment package prepared."
 
       - name: Validate deployment package
         run: |
@@ -57,12 +70,14 @@ jobs:
 
           test -f deploy/server.js
           test -f deploy/package.json
-          test -d deploy/node_modules
+          test -f deploy/.next/BUILD_ID
           test -d deploy/.next/server
           test -d deploy/.next/static
-          test -f deploy/.next/BUILD_ID
+          test -d deploy/node_modules/next
+          test -d deploy/node_modules/react
+          test -d deploy/node_modules/react-dom
 
-          echo "Next.js standalone deployment package is valid."
+          echo "Standalone deployment package is valid."
 
       - name: Deploy to cPanel FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -74,4 +89,4 @@ jobs:
           port: 21
           local-dir: ./deploy/
           server-dir: /
-          dangerous-clean-slate: true
+          dangerous-clean-slate: false
