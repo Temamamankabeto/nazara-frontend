@@ -1,119 +1,49 @@
-name: Deploy Nazara Frontend to cPanel
+name: Deploy Next.js to cPanel
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
-
-concurrency:
-  group: nazara-frontend-production
-  cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
-    name: Build and deploy Next.js frontend
+  deploy:
     runs-on: ubuntu-latest
 
+    env:
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
 
-      - name: Validate production environment
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
-          NEXT_PUBLIC_API_TIMEOUT: ${{ secrets.NEXT_PUBLIC_API_TIMEOUT }}
-        run: |
-          set -e
-
-          test -n "$NEXT_PUBLIC_API_URL"
-          test -n "$NEXT_PUBLIC_BACKEND_URL"
-          test -n "$NEXT_PUBLIC_API_TIMEOUT"
-
-          echo "Production environment variables are configured."
-
       - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js standalone
+        run: npm run build
+
+      - name: Prepare deployment folder
         run: |
-          set -e
-          npm ci --no-audit --no-fund
+          rm -rf deploy
+          mkdir -p deploy/.next
+          cp -r .next/standalone/* deploy/
+          cp -r .next/static deploy/.next/static
+          if [ -d public ]; then cp -r public deploy/public; fi
+          cp package.json deploy/package.json
 
-      - name: Build Next.js standalone application
-        env:
-          NODE_ENV: production
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
-          NEXT_PUBLIC_API_TIMEOUT: ${{ secrets.NEXT_PUBLIC_API_TIMEOUT }}
-        run: |
-          set -e
-
-          rm -f .env
-          rm -f .env.local
-          rm -f .env.production
-          rm -f .env.production.local
-
-          npm run build
-
-          test -f .next/standalone/server.js
-          test -f .next/standalone/package.json
-          test -d .next/standalone/node_modules
-          test -d .next/static
-
-      - name: Prepare standalone deployment package
-        run: |
-          set -e
-
-          rm -rf deploy release
-          mkdir -p deploy release
-
-          cp -a .next/standalone/. deploy/
-
-          mkdir -p deploy/.next/static
-          cp -a .next/static/. deploy/.next/static/
-
-          if [ -d "public" ]; then
-            cp -a public deploy/public
-          fi
-
-          # Never upload environment or local secret files.
-          find deploy -maxdepth 2 -type f \
-            \( -name ".env" \
-            -o -name ".env.*" \
-            -o -name "*.pem" \
-            -o -name "*.key" \
-            -o -name "stderr.log" \) \
-            -delete
-
-          test -f deploy/server.js
-          test -f deploy/package.json
-          test -d deploy/node_modules
-          test -d deploy/.next/static
-
-          cd deploy
-          zip -qr ../release/nazara-frontend-release.zip .
-          cd ..
-
-          test -f release/nazara-frontend-release.zip
-
-          echo "Release ZIP created:"
-          ls -lh release/nazara-frontend-release.zip
-
-      - name: Deploy release ZIP to cPanel
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+      - name: Deploy to cPanel FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./release/
+          local-dir: ./deploy/
           server-dir: /
-          state-name: .ftp-release-sync-state.json
-          dangerous-clean-slate: false
-          log-level: minimal
+          dangerous-clean-slate: true

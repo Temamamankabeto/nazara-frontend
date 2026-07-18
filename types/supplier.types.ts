@@ -20,8 +20,6 @@ export interface SupplierRow {
   email?: string | null;
   address?: string | null;
   contact_person?: string | null;
-  agreement_reference?: string | null;
-  opening_balance?: number | string | null;
   is_active?: boolean;
   branch?: BranchLite | null;
   created_at?: string;
@@ -42,8 +40,6 @@ export interface SupplierFormPayload {
   email?: string | null;
   address?: string | null;
   contact_person?: string | null;
-  agreement_reference?: string | null;
-  opening_balance?: number;
   is_active?: boolean;
 }
 

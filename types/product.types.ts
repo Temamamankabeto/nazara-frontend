@@ -11,12 +11,6 @@ export interface SupplierLite {
   branch_id?: number | string | null;
 }
 
-export interface ProductPriceTier {
-  name: string;
-  min_quantity: number;
-  price: number;
-}
-
 export interface ProductRow {
   id: number | string;
   product_category_id: number | string;
@@ -24,13 +18,11 @@ export interface ProductRow {
   name: string;
   sku: string;
   barcode?: string | null;
-  package_size?: string | null;
   unit_of_measure?: string | null;
   unit_price: number | string;
   reorder_level?: number | string | null;
   current_stock?: number | string | null;
   stock_quantity?: number | string | null;
-  wholesale_price_tiers?: ProductPriceTier[];
   is_active?: boolean;
   category?: ProductCategoryLite | null;
   supplier?: SupplierLite | null;
@@ -53,7 +45,6 @@ export interface ProductFormPayload {
   name: string;
   sku: string;
   barcode?: string | null;
-  package_size?: string | null;
   unit_of_measure?: string | null;
   unit_price: number;
   reorder_level?: number;
@@ -66,13 +57,9 @@ export interface ProductFormState {
   name: string;
   sku: string;
   barcode: string;
-  package_size: string;
   unit_of_measure: string;
   unit_price: string;
   reorder_level: string;
-  tier_distributor: string;
-  tier_wholesale: string;
-  tier_bulk: string;
   is_active: boolean;
 }
 

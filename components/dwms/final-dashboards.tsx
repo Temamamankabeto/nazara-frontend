@@ -1,1 +1,1 @@
-export { AdminDashboard, FinanceDashboard, PurchaseDashboard, SalesDashboard, WarehouseDashboard, default } from '@/components/dashboards/role-dashboards';
+export { AdminDashboard, SalesDashboard, WarehouseDashboard, default } from '@/components/dashboards/role-dashboards';

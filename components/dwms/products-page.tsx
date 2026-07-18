@@ -77,13 +77,9 @@ const initialForm: ProductFormState = {
   name: '',
   sku: '',
   barcode: '',
-  package_size: '',
   unit_of_measure: 'carton',
   unit_price: '',
   reorder_level: '0',
-  tier_distributor: '',
-  tier_wholesale: '',
-  tier_bulk: '',
   is_active: true,
 };
 
@@ -181,8 +177,6 @@ export default function ProductsPage() {
   function openEditDialog(product: ProductRow) {
     setEditing(product);
 
-    const base = Number(product.unit_price ?? 0);
-
     setForm({
       product_category_id: String(
         product.product_category_id ?? product.category?.id ?? '1'
@@ -191,13 +185,9 @@ export default function ProductsPage() {
       name: product.name ?? '',
       sku: product.sku ?? '',
       barcode: product.barcode ?? '',
-      package_size: product.package_size ?? '',
       unit_of_measure: product.unit_of_measure ?? 'carton',
       unit_price: String(product.unit_price ?? ''),
       reorder_level: String(product.reorder_level ?? '0'),
-      tier_distributor: String(Math.max(base * 0.98, 0).toFixed(2)),
-      tier_wholesale: String(Math.max(base * 0.95, 0).toFixed(2)),
-      tier_bulk: String(Math.max(base * 0.9, 0).toFixed(2)),
       is_active: product.is_active ?? true,
     });
 
@@ -220,7 +210,6 @@ export default function ProductsPage() {
       name: form.name,
       sku: form.sku,
       barcode: form.barcode || null,
-      package_size: form.package_size || null,
       unit_of_measure: form.unit_of_measure || null,
       unit_price: Number(form.unit_price || 0),
       reorder_level: Number(form.reorder_level || 0),
@@ -291,24 +280,12 @@ export default function ProductsPage() {
         .map((part) => part[0]?.toUpperCase())
         .join('') || 'PD';
 
-    const sizePart = form.package_size.replace(/\s+/g, '').toUpperCase() || 'UNIT';
-
     setForm((current) => ({
       ...current,
-      sku: `${category?.code ?? 'PRD'}-${namePart}-${sizePart}`,
+      sku: `${category?.code ?? 'PRD'}-${namePart}`,
     }));
   }
 
-  function calculateTiers() {
-    const base = Number(form.unit_price || 0);
-
-    setForm((current) => ({
-      ...current,
-      tier_distributor: String((base * 0.98).toFixed(2)),
-      tier_wholesale: String((base * 0.95).toFixed(2)),
-      tier_bulk: String((base * 0.9).toFixed(2)),
-    }));
-  }
 
   return (
     <div className="space-y-6">
@@ -316,8 +293,7 @@ export default function ProductsPage() {
         <div>
           <h1 className="text-2xl font-semibold">Product Management</h1>
           <p className="text-sm text-muted-foreground">
-            Manage detergent SKUs, categories, package sizes, barcode, supplier
-            references, prices, stock visibility, and reorder levels.
+            Manage detergent SKUs, categories, barcode, supplier references, unit prices, stock visibility, and reorder levels.
           </p>
         </div>
 
@@ -476,8 +452,7 @@ export default function ProductsPage() {
                           {product.barcode
                             ? `Barcode: ${product.barcode}`
                             : 'No barcode'}{' '}
-                          • {product.package_size ?? 'No package'} /{' '}
-                          {product.unit_of_measure ?? 'unit'}
+                          • {product.unit_of_measure ?? 'unit'}
                         </div>
                       </TableCell>
 
@@ -487,9 +462,6 @@ export default function ProductsPage() {
 
                       <TableCell>
                         {money(product.unit_price)}
-                        <div className="text-xs text-muted-foreground">
-                          Bulk tier ready
-                        </div>
                       </TableCell>
 
                       <TableCell>
@@ -800,17 +772,10 @@ export default function ProductsPage() {
 
                       <Card className="shadow-sm">
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-base">Packaging</CardTitle>
+                          <CardTitle className="text-base">Unit information</CardTitle>
                         </CardHeader>
 
                         <CardContent className="space-y-3">
-                          <div className="flex justify-between items-center py-2 border-b">
-                            <span className="text-muted-foreground">Package size</span>
-                            <span className="font-medium">
-                              {selected.package_size ?? '—'}
-                            </span>
-                          </div>
-
                           <div className="flex justify-between items-center py-2">
                             <span className="text-muted-foreground">Unit of measure</span>
                             <span className="font-medium">
@@ -825,7 +790,7 @@ export default function ProductsPage() {
                   <TabsContent value="pricing" className="mt-0">
                     <Card className="shadow-sm">
                       <CardHeader>
-                        <CardTitle className="text-base">Wholesale Pricing</CardTitle>
+                        <CardTitle className="text-base">Product Pricing</CardTitle>
                       </CardHeader>
 
                       <CardContent className="space-y-4">
@@ -834,10 +799,6 @@ export default function ProductsPage() {
                           <span className="text-2xl font-bold text-primary">
                             {money(selected.unit_price)}
                           </span>
-                        </div>
-
-                        <div className="p-4 rounded-lg bg-muted/50 text-sm text-muted-foreground">
-                          <p>Tier prices are calculated in the UI unless you add a product_price_tiers backend table.</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -944,7 +905,7 @@ export default function ProductsPage() {
           <Tabs defaultValue="basic">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic info</TabsTrigger>
-              <TabsTrigger value="pricing">Wholesale pricing</TabsTrigger>
+              <TabsTrigger value="pricing">Pricing</TabsTrigger>
               <TabsTrigger value="stock">Stock rules</TabsTrigger>
             </TabsList>
 
@@ -1048,20 +1009,6 @@ export default function ProductsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Package size</Label>
-                <Input
-                  value={form.package_size}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      package_size: event.target.value,
-                    }))
-                  }
-                  placeholder="5KG Carton"
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label>Unit of measure</Label>
                 <Select
                   value={form.unit_of_measure}
@@ -1104,11 +1051,12 @@ export default function ProductsPage() {
               value="pricing"
               className="mt-4 grid gap-4 md:grid-cols-2"
             >
-              <div className="space-y-2">
-                <Label>Base wholesale unit price</Label>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Unit price</Label>
                 <Input
                   type="number"
                   min="0"
+                  step="0.01"
                   value={form.unit_price}
                   onChange={(event) =>
                     setForm((current) => ({
@@ -1116,66 +1064,12 @@ export default function ProductsPage() {
                       unit_price: event.target.value,
                     }))
                   }
+                  placeholder="0.00"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Enter the standard selling price for one unit of measure.
+                </p>
               </div>
-
-              <div className="flex items-end">
-                <Button type="button" variant="outline" onClick={calculateTiers}>
-                  Calculate suggested tiers
-                </Button>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Distributor tier price</Label>
-                <Input
-                  type="number"
-                  value={form.tier_distributor}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      tier_distributor: event.target.value,
-                    }))
-                  }
-                  placeholder="Optional UI tier"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Wholesale tier price</Label>
-                <Input
-                  type="number"
-                  value={form.tier_wholesale}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      tier_wholesale: event.target.value,
-                    }))
-                  }
-                  placeholder="Optional UI tier"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Bulk tier price</Label>
-                <Input
-                  type="number"
-                  value={form.tier_bulk}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      tier_bulk: event.target.value,
-                    }))
-                  }
-                  placeholder="Optional UI tier"
-                />
-              </div>
-
-              <p className="rounded-md bg-muted p-3 text-sm text-muted-foreground md:col-span-2">
-                Your current backend product table stores one unit_price. These
-                tier fields are included in the frontend workflow as suggested
-                wholesale tiers; add a product_price_tiers backend table when
-                you want these saved permanently.
-              </p>
             </TabsContent>
 
             <TabsContent value="stock" className="mt-4 grid gap-4 md:grid-cols-2">

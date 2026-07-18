@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -49,26 +48,26 @@ const movementTypes: Array<StockMovementType | 'all'> = [
   'initial_stock',
 ];
 
-function getMovementTypeColor(type: StockMovementType) {
-  switch (type) {
-    case 'purchase':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-    case 'sale':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-    case 'adjustment':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-    case 'damage':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-    case 'transfer_in':
-    case 'transfer_out':
-      return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
-    case 'return':
-      return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
-    case 'initial_stock':
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-300';
-    default:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+function movementQuantity(
+  type: StockMovementType,
+  quantity: number | string,
+  target: 'adjustment' | 'purchase' | 'sale'
+) {
+  const value = Number(quantity ?? 0);
+
+  if (target === 'adjustment' && ['adjustment', 'damage'].includes(type)) {
+    return value;
   }
+
+  if (target === 'purchase' && type === 'purchase') {
+    return value;
+  }
+
+  if (target === 'sale' && type === 'sale') {
+    return Math.abs(value);
+  }
+
+  return null;
 }
 
 export default function InventoryMovementsPage() {
@@ -178,10 +177,11 @@ export default function InventoryMovementsPage() {
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Product</TableHead>
-                  <TableHead>Warehouse</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Quantity</TableHead>
-                  <TableHead className="text-right">Unit cost</TableHead>
+                  <TableHead className="text-right">Adjustment Quantity</TableHead>
+                  <TableHead className="text-right">Purchase Quantity</TableHead>
+                  <TableHead className="text-right">Sale Quantity</TableHead>
+                  <TableHead className="text-right">Total Available</TableHead>
+                  <TableHead className="text-right">Unit Cost</TableHead>
                   <TableHead>Notes</TableHead>
                 </TableRow>
               </TableHeader>
@@ -189,7 +189,7 @@ export default function InventoryMovementsPage() {
               <TableBody>
                 {query.isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={7}>
+                    <TableCell colSpan={8}>
                       <div className="flex items-center justify-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       </div>
@@ -197,7 +197,7 @@ export default function InventoryMovementsPage() {
                   </TableRow>
                 ) : rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       {missingEndpoint
                         ? 'Backend route missing. Add GET /stock-movements to enable this page.'
                         : 'No stock movements found.'}
@@ -215,25 +215,35 @@ export default function InventoryMovementsPage() {
                         )}
                       </TableCell>
 
-                      <TableCell>{row.warehouse?.name ?? `Warehouse #${row.warehouse_id}`}</TableCell>
+                      <TableCell className="text-right font-medium">
+                        {movementQuantity(row.movement_type, row.quantity, 'adjustment') === null
+                          ? '—'
+                          : n(movementQuantity(row.movement_type, row.quantity, 'adjustment'))}
+                      </TableCell>
 
-                      <TableCell>
-                        <Badge className={getMovementTypeColor(row.movement_type)}>
-                          {row.movement_type.replace('_', ' ')}
-                        </Badge>
+                      <TableCell className="text-right font-medium text-emerald-700 dark:text-emerald-400">
+                        {movementQuantity(row.movement_type, row.quantity, 'purchase') === null
+                          ? '—'
+                          : n(movementQuantity(row.movement_type, row.quantity, 'purchase'))}
+                      </TableCell>
+
+                      <TableCell className="text-right font-medium text-rose-700 dark:text-rose-400">
+                        {movementQuantity(row.movement_type, row.quantity, 'sale') === null
+                          ? '—'
+                          : n(movementQuantity(row.movement_type, row.quantity, 'sale'))}
                       </TableCell>
 
                       <TableCell className="text-right font-semibold">
-                        {Number(row.quantity) > 0
-                          ? `+${n(row.quantity)}`
-                          : n(row.quantity)}
+                        {n(row.total_available)}
                       </TableCell>
 
                       <TableCell className="text-right">
-                        {row.unit_cost ? money(row.unit_cost) : '—'}
+                        {row.unit_cost !== null && row.unit_cost !== undefined
+                          ? money(row.unit_cost)
+                          : '—'}
                       </TableCell>
 
-                      <TableCell className="max-w-md truncate">
+                      <TableCell className="max-w-sm whitespace-normal break-words">
                         {row.notes ?? '—'}
                       </TableCell>
                     </TableRow>

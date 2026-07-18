@@ -167,8 +167,7 @@ export default function ProductPriceTiersPage() {
                             SKU: {product.sku}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {product.package_size ?? 'No package'} /{' '}
-                            {product.unit_of_measure ?? 'unit'}
+                            Unit: {product.unit_of_measure ?? 'unit'}
                           </div>
                         </TableCell>
 

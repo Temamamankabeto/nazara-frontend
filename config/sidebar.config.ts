@@ -108,94 +108,48 @@ export const warehouseManagerSidebar: RoleSidebar = { title: 'Warehouse Manager'
   s('System', [{ label: 'Notifications', href: '/notifications', icon: Bell }]),
 ] };
 
-export const purchaseOfficerSidebar: RoleSidebar = { title: 'Purchase Officer', icon: PackageCheck, sections: [
-  s('Dashboard', [{ label: 'Dashboard', href: '/dashboard/purchase', icon: LayoutDashboard }]),
-  s('Suppliers', [{ label: 'Suppliers', icon: Truck, children: [
-    { label: 'Suppliers', href: '/suppliers', permission: 'suppliers.read' },
-    { label: 'Supplier Contacts', href: '/suppliers/contacts', permission: 'suppliers.read' },
-    { label: 'Supplier Balances', href: '/reports/finance/supplier-balances', permission: 'reports.financial.read' },
-  ] }]),
-  s('Purchase Management', [{ label: 'Purchase Management', icon: PackageCheck, children: [
-    { label: 'Purchase Requests', href: '/purchase-requests', permission: 'purchases.read' },
-    { label: 'Purchase Orders', href: '/purchase-orders', permission: 'purchases.read' },
-    { label: 'Receiving', href: '/purchase-receivings', permission: 'purchases.receive' },
-    { label: 'Supplier Invoices', href: '/supplier-invoices', permission: 'purchases.read' },
-    { label: 'Purchase History', href: '/purchase-history', permission: 'purchases.read' },
-  ] }]),
-  s('Inventory View', [{ label: 'Inventory View', icon: PackageSearch, children: [
-    { label: 'Products', href: '/products', permission: 'products.read' },
-    { label: 'Stock Balance', href: '/inventory/stock-balance', permission: 'reports.inventory.read' },
-    { label: 'Low Stock Alerts', href: '/inventory/alerts', permission: 'reports.inventory.read' },
-  ] }]),
-  s('Reports', [{ label: 'Reports', icon: BarChart3, children: [
-    { label: 'Operational Report', href: '/reports/operations/advanced', permission: 'reports.purchases.read' },
-    { label: 'Purchase Summary', href: '/reports/operations/purchase-summary', permission: 'reports.purchases.read' },
-    { label: 'Supplier Balance Report', href: '/reports/finance/supplier-balances', permission: 'reports.financial.read' },
-  ] }]),
-  s('System', [{ label: 'Notifications', href: '/notifications', icon: Bell }]),
-] };
-
 export const salesOfficerSidebar: RoleSidebar = { title: 'Sales Officer', icon: ShoppingCart, sections: [
   s('', [{ label: 'Dashboard', href: '/dashboard/sales', icon: LayoutDashboard }]),
-   
   s('', [{ label: 'Sales Management', icon: ShoppingCart, children: [
     { label: 'Sales Orders', href: '/sales-orders', permission: 'sales_orders.read' },
-  ] }]),
-  s('', [{ label: 'Billing View', icon: FileText, children: [
+    { label: 'Delivery Notes', href: '/sales-orders/delivery-notes', permission: 'sales_orders.read' },
     { label: 'Invoices', href: '/invoices', permission: 'invoices.read' },
-    { label: 'Payments History', href: '/payments', permission: 'payments.read' },
   ] }]),
-  s('Inventory View', [{ label: 'Inventory View', icon: PackageSearch, children: [
+  s('', [{ label: 'Procurement', icon: PackageCheck, children: [
+    { label: 'Suppliers', href: '/suppliers', permission: 'suppliers.read' },
+    { label: 'Purchase Requests', href: '/purchase-requests', permission: 'purchases.read' },
+    // { label: 'Purchase Orders', href: '/purchase-orders', permission: 'purchases.read' },
+    // { label: 'Purchase Receiving', href: '/purchase-receivings', permission: 'purchases.receive' },
+    // { label: 'Supplier Invoices', href: '/supplier-invoices', permission: 'purchases.read' },
+    // { label: 'Purchase History', href: '/purchase-history', permission: 'purchases.read' },
+  ] }]),
+  s('', [{ label: 'Finance', icon: Wallet, children: [
+    { label: 'Payments', href: '/payments', permission: 'payments.read' },
+    { label: 'Overdue Invoices', href: '/invoices/overdue', permission: 'reports.financial.read' },
+    // { label: 'Customer Balances', href: '/reports/finance/customer-balances', permission: 'reports.financial.read' },
+    // { label: 'Supplier Balances', href: '/reports/finance/supplier-balances', permission: 'reports.financial.read' },
+    { label: 'Payment Summary', href: '/reports/finance/payment-summary', permission: 'reports.financial.read' },
+    { label: 'Profit Estimation', href: '/reports/finance/profit-estimation', permission: 'reports.financial.read' },
+  ] }]),
+  s('', [{ label: 'Stock Operations', icon: Boxes, children: [
     { label: 'Products', href: '/products', permission: 'products.read' },
-    { label: 'Stock Availability', href: '/inventory', permission: 'reports.inventory.read' },
+    { label: 'Inventory', href: '/inventory', permission: 'reports.inventory.read' },
+    { label: 'Stock Movements', href: '/inventory/stock-movements', permission: 'reports.inventory.read' },
+    { label: 'Stock Transfers', href: '/transfers', permission: 'transfers.read' },
+    { label: 'Returns', href: '/returns', permission: 'returns.read' },
+    { label: 'Low Stock Alerts', href: '/inventory/alerts', permission: 'reports.inventory.read' },
   ] }]),
-  s('Reports', [{ label: 'Reports', icon: BarChart3, children: [
-    { label: 'Sales Report', href: '/reports/sales/daily', permission: 'reports.sales.read' },
+  s('', [{ label: 'Reports', icon: BarChart3, children: [
     { label: 'Daily Sales', href: '/reports/sales/daily', permission: 'reports.sales.read' },
     { label: 'Monthly Sales', href: '/reports/sales/monthly', permission: 'reports.sales.read' },
     { label: 'Sales by Region', href: '/reports/sales/by-region', permission: 'reports.sales.read' },
     { label: 'Sales by Distributor', href: '/reports/sales/by-distributor', permission: 'reports.sales.read' },
     { label: 'Top-Selling Products', href: '/reports/sales/top-products', permission: 'reports.sales.read' },
+    { label: 'Inventory Report', href: '/reports/inventory/advanced', permission: 'reports.inventory.read' },
+    { label: 'Purchase Summary', href: '/reports/operations/purchase-summary', permission: 'reports.purchases.read' },
+    { label: 'Operational Report', href: '/reports/operations/advanced', permission: 'reports.analytics.read' },
   ] }]),
   s('System', [{ label: 'Notifications', href: '/notifications', icon: Bell }]),
-] };
-
-export const financeOfficerSidebar: RoleSidebar = { title: 'Finance Officer', icon: Wallet, sections: [
-  s('', [{ label: 'Dashboard', href: '/dashboard/finance', icon: LayoutDashboard }]),
-  s('', [{ label: 'Billing', icon: FileText, children: [
-    { label: 'Invoices', href: '/invoices', permission: 'invoices.read' },
-    { label: 'Overdue Invoices', href: '/invoices/overdue', permission: 'reports.financial.read' },
-    { label: 'Customer Balances', href: '/reports/finance/customer-balances', permission: 'reports.financial.read' },
-  ] }]),
-  s('', [{ label: 'Payments', icon: Wallet, children: [
-    { label: 'Payments', href: '/payments', permission: 'payments.read' },
-  ] }]),
-  s('', [{ label: 'Supplier Finance', icon: PackageCheck, children: [
-    { label: 'Supplier Balances', href: '/reports/finance/supplier-balances', permission: 'reports.financial.read' },
-    { label: 'Supplier Invoices', href: '/supplier-invoices', permission: 'purchases.read' },
-  ] }]),
-  s('', [{ label: 'Financial Reports', icon: BarChart3, children: [
-    { label: 'Sales Report', href: '/reports/sales/daily', permission: 'reports.sales.read' },
-    { label: 'Payment Summary', href: '/reports/finance/payment-summary', permission: 'reports.financial.read' },
-    { label: 'Customer Outstanding', href: '/reports/finance/customer-balances', permission: 'reports.financial.read' },
-    { label: 'Supplier Balances', href: '/reports/finance/supplier-balances', permission: 'reports.financial.read' },
-    { label: 'Profit Estimation', href: '/reports/finance/profit-estimation', permission: 'reports.financial.read' },
-  ] }]),
-] };
-
-export const storeKeeperSidebar: RoleSidebar = { title: 'Store Keeper', icon: Warehouse, sections: [
-  s('Dashboard', [{ label: 'Dashboard', href: '/dashboard/warehouse', icon: LayoutDashboard }]),
-  s('', [{ label: 'Stock Operations', icon: Boxes, children: [
-    { label: 'inventory', href: '/inventory', permission: 'reports.inventory.read' },
-    { label: 'Purchase Receiving', href: '/purchase-receivings', permission: 'purchases.receive' }
- 
-  ] }]),
-   
-  s('', [{ label: 'Reports', icon: BarChart3, children: [
-    { label: 'Inventory Report', href: '/reports/inventory/advanced', permission: 'reports.inventory.read' },
-    { label: 'Movement History', href: '/inventory/stock-movements', permission: 'reports.inventory.read' },
-    { label: 'Warehouse Stock Summary', href: '/reports/inventory/warehouse-summary', permission: 'reports.inventory.read' },
-  ] }]),
 ] };
 
 export const auditorSidebar: RoleSidebar = { title: 'Auditor', icon: ShieldCheck, sections: [
@@ -245,10 +199,7 @@ export const roleSidebars: Record<string, RoleSidebar> = {
   Admin: adminSidebar, admin: adminSidebar, 'General Administrator': adminSidebar, 'System Administrator': adminSidebar, system_admin: adminSidebar, general_admin: adminSidebar,
   'Branch Manager': branchManagerSidebar, branch_manager: branchManagerSidebar,
   'Warehouse Manager': warehouseManagerSidebar, warehouse_manager: warehouseManagerSidebar,
-  'Purchase Officer': purchaseOfficerSidebar, 'Procurement Officer': purchaseOfficerSidebar, purchase_officer: purchaseOfficerSidebar, procurement_officer: purchaseOfficerSidebar,
   'Sales Officer': salesOfficerSidebar, sales_officer: salesOfficerSidebar,
-  'Finance Officer': financeOfficerSidebar, finance_officer: financeOfficerSidebar, finance: financeOfficerSidebar,
-  'Store Keeper': storeKeeperSidebar, store_keeper: storeKeeperSidebar,
   Auditor: auditorSidebar, auditor: auditorSidebar,
   Distributor: customerSidebar, distributor: customerSidebar, Customer: customerSidebar, customer: customerSidebar, Retailer: customerSidebar, retailer: customerSidebar,
 };

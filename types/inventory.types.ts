@@ -7,12 +7,15 @@ export type { ProductRow, PaginatedResponse } from './product.types';
 export type { WarehouseRow } from './warehouse.types';
 
 // ============ Stock Movement Types ============
-export type StockMovementType = 
+export type StockMovementType =
   | 'purchase'      // Stock received from supplier
   | 'sale'          // Stock sold to customer
   | 'transfer_in'   // Stock received from another warehouse
   | 'transfer_out'  // Stock sent to another warehouse
-  | 'return'        // Stock returned from customer
+  | 'transfer'      // Legacy/current backend warehouse transfer movement
+  | 'return'        // Legacy generic return movement
+  | 'return_in'     // Customer return received into stock
+  | 'return_out'    // Supplier/damaged/expired return removed from stock
   | 'adjustment'    // Manual stock adjustment
   | 'damage'        // Stock damaged and removed
   | 'initial_stock'; // Initial stock entry
@@ -29,6 +32,7 @@ export interface StockBalanceRow extends ProductRow {
   movements_count?: number | string;
   adjustments_count?: number | string;
   last_movement_type?: StockMovementType | null;
+  last_movement_at?: string | null;
   last_unit_cost?: number | string | null;
   stock_value?: number | string | null;
   product?: ProductRow;
@@ -49,8 +53,9 @@ export interface StockMovementRow {
   product_id: number;
   warehouse_id: number;
   movement_type: StockMovementType;
-  quantity: number;
-  unit_cost?: number | null;
+  quantity: number | string;
+  total_available?: number | string;
+  unit_cost?: number | string | null;
   reference_type?: string | null;  // e.g., 'sales_order', 'purchase_order', 'stock_transfer'
   reference_id?: number | null;
   notes?: string | null;
@@ -179,7 +184,7 @@ export interface StockAdjustmentPayload {
   warehouse_id: number;
   movement_type: 'adjustment' | 'damage';
   quantity: number;           // Positive = add, Negative = remove
-  unit_cost?: number | null;  // Required for positive adjustments
+  unit_cost?: number | string | null;  // Required for positive adjustments
   reason: string;
   notes?: string | null;
 }
@@ -276,12 +281,20 @@ export interface StockMovementSummary {
 }
 
 // ============ Constants ============
-export const STOCK_MOVEMENT_TYPES: Array<{ value: StockMovementType; label: string; icon: string; color: string }> = [
+export const STOCK_MOVEMENT_TYPES: Array<{
+  value: StockMovementType;
+  label: string;
+  icon: string;
+  color: string;
+}> = [
   { value: 'purchase', label: 'Purchase', icon: 'PlusCircle', color: 'green' },
   { value: 'sale', label: 'Sale', icon: 'MinusCircle', color: 'red' },
   { value: 'transfer_in', label: 'Transfer In', icon: 'ArrowDownCircle', color: 'blue' },
   { value: 'transfer_out', label: 'Transfer Out', icon: 'ArrowUpCircle', color: 'blue' },
+  { value: 'transfer', label: 'Transfer', icon: 'ArrowRightLeft', color: 'blue' },
   { value: 'return', label: 'Return', icon: 'RefreshCw', color: 'orange' },
+  { value: 'return_in', label: 'Customer Return In', icon: 'RefreshCw', color: 'green' },
+  { value: 'return_out', label: 'Return Out', icon: 'RefreshCw', color: 'red' },
   { value: 'adjustment', label: 'Adjustment', icon: 'Settings', color: 'purple' },
   { value: 'damage', label: 'Damage', icon: 'Trash2', color: 'red' },
   { value: 'initial_stock', label: 'Initial Stock', icon: 'Database', color: 'gray' },
@@ -324,11 +337,11 @@ export const DEFAULT_STOCK_ADJUSTMENT: StockAdjustmentPayload = {
 
 // ============ Type Guard Functions ============
 export function isPositiveMovement(movement: StockMovementRow): boolean {
-  return movement.quantity > 0;
+  return Number(movement.quantity ?? 0) > 0;
 }
 
 export function isNegativeMovement(movement: StockMovementRow): boolean {
-  return movement.quantity < 0;
+  return Number(movement.quantity ?? 0) < 0;
 }
 
 export function isTransferCompleted(transfer: StockTransferRow): boolean {

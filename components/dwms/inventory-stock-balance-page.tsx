@@ -203,7 +203,7 @@ export default function InventoryStockBalancePage() {
                         <TableCell>
                           <div className="font-medium">{row.product?.name ?? `Product #${row.product_id}`}</div>
                           <div className="text-xs text-muted-foreground">
-                            SKU: {row.product?.sku ?? '—'} • {row.product?.package_size ?? '—'}
+                            SKU: {row.product?.sku ?? '—'} • Unit: {row.product?.unit_of_measure ?? 'unit'}
                           </div>
                           {row.product?.barcode && (
                             <div className="text-xs text-muted-foreground">

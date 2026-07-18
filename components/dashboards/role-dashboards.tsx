@@ -596,10 +596,8 @@ function OverdueInvoicesPanel() {
 function FocusPanel({ role }: { role: DashboardRole }) {
   const messages: Record<DashboardRole, string> = {
     admin: 'Review users, roles, audit logs, system settings, and business-wide reports.',
-    sales: 'Approve pending orders, dispatch approved orders, and follow customer balances.',
+    sales: 'Manage sales, procurement, receiving, payments, stock operations, and customer/supplier balances.',
     warehouse: 'Monitor low stock, transfers, stock adjustments, damaged stock, and warehouse balances.',
-    finance: 'Follow collections, overdue invoices, customer balances, supplier balances, and payment summaries.',
-    purchase: 'Convert purchase requests to orders, receive stock, and reconcile supplier invoices.',
   };
 
   return (
@@ -617,39 +615,11 @@ function FocusPanel({ role }: { role: DashboardRole }) {
   );
 }
 
-function FinanceDashboardContent() {
-  return (
-    <DashboardShell role="finance">
-      <FinanceSummaryCards />
-
-      <div className="grid gap-4 xl:grid-cols-3">
-        <FinanceQuickActionsPanel />
-        <RecentPaymentsPanel />
-        <OverdueInvoicesPanel />
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-2">
-        <CustomerBalancePanel />
-        <SupplierBalancePanel />
-      </div>
-    </DashboardShell>
-  );
-}
-
 function DashboardContent({ role }: { role: DashboardRole }) {
-  const showLowStock = role === 'admin' || role === 'warehouse' || role === 'purchase';
-  const showCustomerBalance = role === 'admin' || role === 'sales' || role === 'finance';
-  const showSupplierBalance = role === 'finance' || role === 'purchase';
-
-  if (role === 'finance') {
-    return <FinanceDashboardContent />;
-  }
-
   if (role === 'warehouse') {
     return (
       <DashboardShell role={role}>
         <WarehouseSummaryCards />
-
         <div className="grid gap-4 xl:grid-cols-3">
           <WarehouseOperationsPanel />
           <LowStockPanel />
@@ -659,28 +629,31 @@ function DashboardContent({ role }: { role: DashboardRole }) {
     );
   }
 
+  if (role === 'sales') {
+    return (
+      <DashboardShell role={role}>
+        <FinanceSummaryCards />
+        <div className="grid gap-4 xl:grid-cols-3">
+          <QuickActionsPanel role={role} />
+          <RecentPaymentsPanel />
+          <OverdueInvoicesPanel />
+        </div>
+        <div className="grid gap-4 xl:grid-cols-3">
+          <LowStockPanel />
+          <CustomerBalancePanel />
+          <SupplierBalancePanel />
+        </div>
+      </DashboardShell>
+    );
+  }
+
   return (
     <DashboardShell role={role}>
       <SharedSummaryCards />
-
       <div className="grid gap-4 xl:grid-cols-3">
         <QuickActionsPanel role={role} />
-
-        {showLowStock ? (
-          <LowStockPanel />
-        ) : showCustomerBalance ? (
-          <CustomerBalancePanel />
-        ) : (
-          <FocusPanel role={role} />
-        )}
-
-        {showSupplierBalance ? (
-          <SupplierBalancePanel />
-        ) : showCustomerBalance ? (
-          <CustomerBalancePanel />
-        ) : (
-          <FocusPanel role={role} />
-        )}
+        <LowStockPanel />
+        <CustomerBalancePanel />
       </div>
     </DashboardShell>
   );
@@ -698,13 +671,6 @@ export function WarehouseDashboard() {
   return <DashboardContent role="warehouse" />;
 }
 
-export function FinanceDashboard() {
-  return <DashboardContent role="finance" />;
-}
-
-export function PurchaseDashboard() {
-  return <DashboardContent role="purchase" />;
-}
 
 export default function RoleBasedDashboard() {
   const user = useSelector((state: RootState) => state.auth.user);

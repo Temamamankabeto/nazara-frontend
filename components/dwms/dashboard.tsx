@@ -28,24 +28,16 @@ function getQuickLinksForUser(user: any): DashboardQuickAction[] {
       { href: '/customers', label: 'Customers', icon: Wallet, permission: 'customers.read' },
       { href: '/invoices', label: 'Invoices', icon: FileText, permission: 'invoices.read' },
       { href: '/payments', label: 'Payments', icon: ReceiptText, permission: 'payments.read' },
+      { href: '/purchase-orders', label: 'Purchase Orders', icon: Package, permission: 'purchases.read' },
+      { href: '/purchase-receivings', label: 'Receive Stock', icon: AlertTriangle, permission: 'purchases.receive' },
+      { href: '/suppliers', label: 'Suppliers', icon: Wallet, permission: 'suppliers.read' },
+      { href: '/reports/finance/payment-summary', label: 'Financial Reports', icon: TrendingUp, permission: 'reports.financial.read' },
     ],
     warehouse: [
       { href: '/inventory', label: 'Stock Management', icon: Package, permission: 'inventory.read' },
       { href: '/inventory/movements', label: 'Stock Movements', icon: AlertTriangle, permission: 'inventory.movements.read' },
       { href: '/transfers', label: 'Stock Transfers', icon: TrendingUp, permission: 'transfers.read' },
       { href: '/warehouses', label: 'Warehouses', icon: FileText, permission: 'warehouses.read' },
-    ],
-    finance: [
-      { href: '/payments', label: 'Collections', icon: Wallet, permission: 'payments.read' },
-      { href: '/invoices', label: 'Invoices', icon: FileText, permission: 'invoices.read' },
-      { href: '/reports/finance', label: 'Financial Reports', icon: TrendingUp, permission: 'reports.finance.read' },
-      { href: '/reports/finance/customer-balances', label: 'Customer Balances', icon: ReceiptText, permission: 'reports.finance.read' },
-    ],
-    purchase: [
-      { href: '/purchase-orders', label: 'Purchase Orders', icon: Package, permission: 'purchases.read' },
-      { href: '/suppliers', label: 'Suppliers', icon: Wallet, permission: 'suppliers.read' },
-      { href: '/inventory/receiving', label: 'Receive Stock', icon: AlertTriangle, permission: 'inventory.receive' },
-      { href: '/reports/purchase', label: 'Purchase Reports', icon: FileText, permission: 'reports.purchase.read' },
     ],
   };
 

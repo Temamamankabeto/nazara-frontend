@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { toast } from 'sonner';
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 import {
   Edit,
   Eye,
@@ -16,20 +17,19 @@ import {
   X,
   Users,
   Building2,
-  FileSignature,
   DollarSign,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,17 +37,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -55,35 +55,35 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
-import { useBranchesQuery } from '@/queries/branch.queries';
+import { useBranchesQuery } from "@/queries/branch.queries";
+import type { RootState } from "@/stores";
+import { getPrimaryRole, normalizeRole } from "@/lib/role-access";
 import {
   useSupplierBalancesQuery,
   useSupplierLedgerQuery,
   useSuppliersQuery,
-} from '@/queries/supplier.queries';
+} from "@/queries/supplier.queries";
 
 import {
   useCreateSupplierMutation,
   useDeleteSupplierMutation,
   useToggleSupplierStatusMutation,
   useUpdateSupplierMutation,
-} from '@/hooks/use-suppliers';
+} from "@/hooks/use-suppliers";
 
-import type { SupplierFormPayload, SupplierRow } from '@/types/supplier.types';
+import type { SupplierFormPayload, SupplierRow } from "@/types/supplier.types";
 
 const initialForm = {
-  branch_id: 'none',
-  name: '',
-  phone: '',
-  email: '',
-  address: '',
-  contact_person: '',
-  agreement_reference: '',
-  opening_balance: '0',
+  branch_id: "none",
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  contact_person: "",
   is_active: true,
 };
 
@@ -92,10 +92,13 @@ function money(value: number | string | null | undefined) {
 }
 
 export default function SuppliersPage() {
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const isGeneralAdministrator =
+    normalizeRole(getPrimaryRole(currentUser)) === "General Administrator";
   const [page, setPage] = useState(1);
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
-  const [active, setActive] = useState<'all' | '1' | '0'>('all');
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [active, setActive] = useState<"all" | "1" | "0">("all");
 
   const [open, setOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -139,22 +142,21 @@ export default function SuppliersPage() {
         balances.map((row) => [
           String(row.supplier_id),
           Number(row.balance ?? 0),
-        ])
+        ]),
       ),
-    [balances]
+    [balances],
   );
 
   const stats = useMemo(
     () => ({
       total: meta.total,
       active: rows.filter((row) => row.is_active).length,
-      agreements: rows.filter((row) => row.agreement_reference).length,
       balances: balances.reduce(
         (sum, row) => sum + Number(row.balance ?? 0),
-        0
+        0,
       ),
     }),
-    [rows, meta.total, balances]
+    [rows, meta.total, balances],
   );
 
   function runSearch() {
@@ -171,14 +173,12 @@ export default function SuppliersPage() {
   function openEditDialog(supplier: SupplierRow) {
     setEditing(supplier);
     setForm({
-      branch_id: supplier.branch_id ? String(supplier.branch_id) : 'none',
-      name: supplier.name ?? '',
-      phone: supplier.phone ?? '',
-      email: supplier.email ?? '',
-      address: supplier.address ?? '',
-      contact_person: supplier.contact_person ?? '',
-      agreement_reference: supplier.agreement_reference ?? '',
-      opening_balance: String(supplier.opening_balance ?? 0),
+      branch_id: supplier.branch_id ? String(supplier.branch_id) : "none",
+      name: supplier.name ?? "",
+      phone: supplier.phone ?? "",
+      email: supplier.email ?? "",
+      address: supplier.address ?? "",
+      contact_person: supplier.contact_person ?? "",
       is_active: supplier.is_active ?? true,
     });
     setOpen(true);
@@ -191,14 +191,17 @@ export default function SuppliersPage() {
 
   async function submitSupplier() {
     const payload: SupplierFormPayload = {
-      branch_id: form.branch_id === 'none' ? null : Number(form.branch_id),
+      ...(isGeneralAdministrator
+        ? {
+            branch_id:
+              form.branch_id === "none" ? null : Number(form.branch_id),
+          }
+        : {}),
       name: form.name,
       phone: form.phone || null,
       email: form.email || null,
       address: form.address || null,
       contact_person: form.contact_person || null,
-      agreement_reference: form.agreement_reference || null,
-      opening_balance: Number(form.opening_balance || 0),
       is_active: form.is_active,
     };
 
@@ -208,10 +211,10 @@ export default function SuppliersPage() {
           id: editing.id,
           payload,
         });
-        toast.success('Supplier updated successfully');
+        toast.success("Supplier updated successfully");
       } else {
         await createMutation.mutateAsync(payload);
-        toast.success('Supplier registered successfully');
+        toast.success("Supplier registered successfully");
       }
 
       setOpen(false);
@@ -219,7 +222,7 @@ export default function SuppliersPage() {
       toast.error(
         error?.response?.data?.message ??
           error?.message ??
-          'Could not save supplier'
+          "Could not save supplier",
       );
     }
   }
@@ -227,12 +230,12 @@ export default function SuppliersPage() {
   async function toggleSupplier(supplier: SupplierRow) {
     try {
       await toggleMutation.mutateAsync(supplier.id);
-      toast.success('Supplier status updated');
+      toast.success("Supplier status updated");
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ??
           error?.message ??
-          'Could not update supplier'
+          "Could not update supplier",
       );
     }
   }
@@ -242,12 +245,12 @@ export default function SuppliersPage() {
 
     try {
       await deleteMutation.mutateAsync(supplier.id);
-      toast.success('Supplier deleted');
+      toast.success("Supplier deleted");
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ??
           error?.message ??
-          'Could not delete supplier'
+          "Could not delete supplier",
       );
     }
   }
@@ -258,8 +261,8 @@ export default function SuppliersPage() {
         <div>
           <h1 className="text-2xl font-semibold">Supplier Management</h1>
           <p className="text-sm text-muted-foreground">
-            Register suppliers, contacts, agreement references, deliveries,
-            purchase history, and balances.
+            Register and manage suppliers, contacts, deliveries, purchase
+            history, and balances.
           </p>
         </div>
 
@@ -282,22 +285,25 @@ export default function SuppliersPage() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-green-50 dark:bg-green-950/20">
                 <Users className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm font-medium text-green-600 dark:text-green-400">Active</span>
-                <Badge variant="outline" className="bg-green-100 dark:bg-green-900/30">
+                <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                  Active
+                </span>
+                <Badge
+                  variant="outline"
+                  className="bg-green-100 dark:bg-green-900/30"
+                >
                   {stats.active}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-50 dark:bg-blue-950/20">
-                <FileSignature className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Agreements</span>
-                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900/30">
-                  {stats.agreements}
                 </Badge>
               </div>
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-purple-50 dark:bg-purple-950/20">
                 <DollarSign className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Total Balance</span>
-                <Badge variant="outline" className="bg-purple-100 dark:bg-purple-900/30">
+                <span className="text-sm font-medium text-purple-600 dark:text-purple-400">
+                  Total Balance
+                </span>
+                <Badge
+                  variant="outline"
+                  className="bg-purple-100 dark:bg-purple-900/30"
+                >
                   {money(stats.balances)}
                 </Badge>
               </div>
@@ -321,12 +327,12 @@ export default function SuppliersPage() {
               placeholder="Search name, phone, email, contact person"
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
-              onKeyDown={(event) => event.key === 'Enter' && runSearch()}
+              onKeyDown={(event) => event.key === "Enter" && runSearch()}
             />
 
             <Select
               value={active}
-              onValueChange={(value: 'all' | '1' | '0') => {
+              onValueChange={(value: "all" | "1" | "0") => {
                 setPage(1);
                 setActive(value);
               }}
@@ -356,72 +362,55 @@ export default function SuppliersPage() {
                 <TableRow>
                   <TableHead>Supplier</TableHead>
                   <TableHead>Contact</TableHead>
-                  <TableHead>Agreement</TableHead>
                   <TableHead>Branch</TableHead>
                   <TableHead>Balance</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="w-[70px] text-right">
-                    Actions
-                  </TableHead>
+                  <TableHead className="w-[70px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {suppliersQuery.isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={7}>Loading suppliers...</TableCell>
+                    <TableCell colSpan={6}>Loading suppliers...</TableCell>
                   </TableRow>
                 ) : rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7}>No suppliers found.</TableCell>
+                    <TableCell colSpan={6}>No suppliers found.</TableCell>
                   </TableRow>
                 ) : (
                   rows.map((supplier) => (
                     <TableRow key={supplier.id}>
                       <TableCell>
                         <div className="font-medium">{supplier.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          Opening: {money(supplier.opening_balance)}
-                        </div>
                       </TableCell>
 
                       <TableCell>
-                        <div>{supplier.contact_person ?? '—'}</div>
+                        <div>{supplier.contact_person ?? "—"}</div>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Phone className="h-3 w-3" />
-                          {supplier.phone ?? 'No phone'}
+                          {supplier.phone ?? "No phone"}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {supplier.email ?? 'No email'}
+                          {supplier.email ?? "No email"}
                         </div>
                       </TableCell>
 
-                      <TableCell>
-                        {supplier.agreement_reference ? (
-                          <Badge variant="secondary">
-                            {supplier.agreement_reference}
-                          </Badge>
-                        ) : (
-                          '—'
-                        )}
-                      </TableCell>
-
-                      <TableCell>{supplier.branch?.name ?? '—'}</TableCell>
+                      <TableCell>{supplier.branch?.name ?? "—"}</TableCell>
 
                       <TableCell>
                         <Badge variant="outline" className="font-semibold">
                           {money(
-                            balanceBySupplier.get(String(supplier.id)) ??
-                              supplier.opening_balance
+                            balanceBySupplier.get(String(supplier.id)) ?? 0,
                           )}
                         </Badge>
                       </TableCell>
 
                       <TableCell>
                         <Badge
-                          variant={supplier.is_active ? 'default' : 'secondary'}
+                          variant={supplier.is_active ? "default" : "secondary"}
                         >
-                          {supplier.is_active ? 'Active' : 'Inactive'}
+                          {supplier.is_active ? "Active" : "Inactive"}
                         </Badge>
                       </TableCell>
 
@@ -460,7 +449,7 @@ export default function SuppliersPage() {
                               onClick={() => toggleSupplier(supplier)}
                             >
                               <Power className="mr-2 h-4 w-4" />
-                              {supplier.is_active ? 'Disable' : 'Enable'}
+                              {supplier.is_active ? "Disable" : "Enable"}
                             </DropdownMenuItem>
 
                             <DropdownMenuSeparator />
@@ -520,10 +509,14 @@ export default function SuppliersPage() {
               </div>
               <div>
                 <DialogTitle className="text-xl">
-                  {editing ? 'Edit supplier' : 'Register supplier'}
+                  {editing ? "Edit supplier" : "Register supplier"}
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {editing ? 'Update supplier information' : 'Add a new supplier to the system'}
+                  {editing
+                    ? "Update the supplier profile and contact information."
+                    : isGeneralAdministrator
+                      ? "Add a supplier and assign the appropriate branch."
+                      : "The supplier will automatically be registered under your assigned branch."}
                 </p>
               </div>
             </div>
@@ -545,31 +538,29 @@ export default function SuppliersPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Branch</Label>
-                <Select
-                  value={form.branch_id}
-                  onValueChange={(value) =>
-                    setForm((current) => ({
-                      ...current,
-                      branch_id: value,
-                    }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectItem value="none">Use my branch/default</SelectItem>
-                    {branches.map((branch) => (
-                      <SelectItem key={branch.id} value={String(branch.id)}>
-                        {branch.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {isGeneralAdministrator && (
+                <div className="space-y-2">
+                  <Label>Branch</Label>
+                  <Select
+                    value={form.branch_id}
+                    onValueChange={(value) =>
+                      setForm((current) => ({ ...current, branch_id: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No branch</SelectItem>
+                      {branches.map((branch) => (
+                        <SelectItem key={branch.id} value={String(branch.id)}>
+                          {branch.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label>Contact person</Label>
@@ -614,35 +605,6 @@ export default function SuppliersPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Agreement reference</Label>
-                <Input
-                  value={form.agreement_reference}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      agreement_reference: event.target.value,
-                    }))
-                  }
-                  placeholder="AGR-2026-001"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Opening balance</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={form.opening_balance}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      opening_balance: event.target.value,
-                    }))
-                  }
-                />
-              </div>
-
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={form.is_active}
@@ -682,7 +644,7 @@ export default function SuppliersPage() {
               onClick={submitSupplier}
               disabled={createMutation.isPending || updateMutation.isPending}
             >
-              {editing ? 'Save changes' : 'Register supplier'}
+              {editing ? "Save changes" : "Register supplier"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -698,15 +660,20 @@ export default function SuppliersPage() {
                   <Building2 className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <DialogTitle className="text-xl">Supplier Details</DialogTitle>
+                  <DialogTitle className="text-xl">
+                    Supplier Details
+                  </DialogTitle>
                   <p className="text-sm text-muted-foreground mt-1">
                     Complete information about this supplier
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={selected?.is_active ? 'default' : 'secondary'} className="px-3 py-1">
-                  {selected?.is_active ? 'Active' : 'Inactive'}
+                <Badge
+                  variant={selected?.is_active ? "default" : "secondary"}
+                  className="px-3 py-1"
+                >
+                  {selected?.is_active ? "Active" : "Inactive"}
                 </Badge>
                 <Button
                   variant="ghost"
@@ -742,18 +709,26 @@ export default function SuppliersPage() {
 
                         <CardContent className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b">
-                            <span className="text-muted-foreground">Contact person</span>
-                            <span className="font-medium">{selected.contact_person ?? '—'}</span>
+                            <span className="text-muted-foreground">
+                              Contact person
+                            </span>
+                            <span className="font-medium">
+                              {selected.contact_person ?? "—"}
+                            </span>
                           </div>
 
                           <div className="flex justify-between items-center py-2 border-b">
                             <span className="text-muted-foreground">Phone</span>
-                            <span className="font-medium">{selected.phone ?? '—'}</span>
+                            <span className="font-medium">
+                              {selected.phone ?? "—"}
+                            </span>
                           </div>
 
                           <div className="flex justify-between items-center py-2">
                             <span className="text-muted-foreground">Email</span>
-                            <span className="font-medium">{selected.email ?? '—'}</span>
+                            <span className="font-medium">
+                              {selected.email ?? "—"}
+                            </span>
                           </div>
                         </CardContent>
                       </Card>
@@ -768,28 +743,21 @@ export default function SuppliersPage() {
 
                         <CardContent className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b">
-                            <span className="text-muted-foreground">Branch</span>
-                            <span className="font-medium">{selected.branch?.name ?? '—'}</span>
-                          </div>
-
-                          <div className="flex justify-between items-center py-2 border-b">
-                            <span className="text-muted-foreground">Agreement</span>
-                            <span className="font-mono text-sm font-medium">
-                              {selected.agreement_reference ?? '—'}
+                            <span className="text-muted-foreground">
+                              Branch
+                            </span>
+                            <span className="font-medium">
+                              {selected.branch?.name ?? "—"}
                             </span>
                           </div>
 
-                          <div className="flex justify-between items-center py-2 border-b">
-                            <span className="text-muted-foreground">Opening balance</span>
-                            <span className="font-medium">{money(selected.opening_balance)}</span>
-                          </div>
-
                           <div className="flex justify-between items-center py-2">
-                            <span className="text-muted-foreground">Current balance</span>
+                            <span className="text-muted-foreground">
+                              Current balance
+                            </span>
                             <span className="text-lg font-bold text-primary">
                               {money(
-                                balanceBySupplier.get(String(selected.id)) ??
-                                  selected.opening_balance
+                                balanceBySupplier.get(String(selected.id)) ?? 0,
                               )}
                             </span>
                           </div>
@@ -802,7 +770,7 @@ export default function SuppliersPage() {
                         </CardHeader>
                         <CardContent>
                           <div className="p-3 rounded-lg bg-muted/50 text-sm">
-                            {selected.address ?? 'No address provided'}
+                            {selected.address ?? "No address provided"}
                           </div>
                         </CardContent>
                       </Card>
@@ -812,43 +780,69 @@ export default function SuppliersPage() {
                   <TabsContent value="ledger" className="mt-0">
                     <Card className="shadow-sm">
                       <CardHeader>
-                        <CardTitle className="text-base">Supplier Ledger History</CardTitle>
+                        <CardTitle className="text-base">
+                          Supplier Ledger History
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="rounded-lg border">
                           <Table>
                             <TableHeader>
                               <TableRow className="bg-muted/50">
-                                <TableHead className="font-semibold">Date</TableHead>
-                                <TableHead className="font-semibold">Type</TableHead>
-                                <TableHead className="font-semibold">Document</TableHead>
-                                <TableHead className="font-semibold text-right">Debit</TableHead>
-                                <TableHead className="font-semibold text-right">Credit</TableHead>
-                                <TableHead className="font-semibold text-right">Balance</TableHead>
+                                <TableHead className="font-semibold">
+                                  Date
+                                </TableHead>
+                                <TableHead className="font-semibold">
+                                  Type
+                                </TableHead>
+                                <TableHead className="font-semibold">
+                                  Document
+                                </TableHead>
+                                <TableHead className="font-semibold text-right">
+                                  Debit
+                                </TableHead>
+                                <TableHead className="font-semibold text-right">
+                                  Credit
+                                </TableHead>
+                                <TableHead className="font-semibold text-right">
+                                  Balance
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
 
                             <TableBody>
                               {ledgerQuery.isLoading ? (
                                 <TableRow>
-                                  <TableCell colSpan={6} className="text-center">
+                                  <TableCell
+                                    colSpan={6}
+                                    className="text-center"
+                                  >
                                     Loading balance history...
                                   </TableCell>
                                 </TableRow>
                               ) : ledgerRows.length === 0 ? (
                                 <TableRow>
-                                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                  <TableCell
+                                    colSpan={6}
+                                    className="text-center text-muted-foreground"
+                                  >
                                     No ledger entries found.
                                   </TableCell>
                                 </TableRow>
                               ) : (
                                 ledgerRows.map((row, index) => (
                                   <TableRow key={row.id ?? index}>
-                                    <TableCell>{row.entry_date ?? '—'}</TableCell>
                                     <TableCell>
-                                      <Badge variant="outline">{row.entry_type ?? '—'}</Badge>
+                                      {row.entry_date ?? "—"}
                                     </TableCell>
-                                    <TableCell className="font-mono text-sm">{row.document_number ?? '—'}</TableCell>
+                                    <TableCell>
+                                      <Badge variant="outline">
+                                        {row.entry_type ?? "—"}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell className="font-mono text-sm">
+                                      {row.document_number ?? "—"}
+                                    </TableCell>
                                     <TableCell className="text-right text-green-600 dark:text-green-400">
                                       {money(row.debit)}
                                     </TableCell>
@@ -871,17 +865,21 @@ export default function SuppliersPage() {
                   <TabsContent value="deliveries" className="mt-0">
                     <Card className="shadow-sm">
                       <CardHeader>
-                        <CardTitle className="text-base">Supplier Deliveries</CardTitle>
+                        <CardTitle className="text-base">
+                          Supplier Deliveries
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="p-6 rounded-lg bg-muted/50 text-center">
                           <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                           <p className="text-muted-foreground">
-                            Supplier deliveries are tracked through Purchase Orders and Stock Receiving.
+                            Supplier deliveries are tracked through Purchase
+                            Orders and Stock Receiving.
                           </p>
                           <p className="text-sm text-muted-foreground mt-2">
-                            Open the Purchase Orders module to view received, partially received, 
-                            and pending deliveries for this supplier.
+                            Open the Purchase Orders module to view received,
+                            partially received, and pending deliveries for this
+                            supplier.
                           </p>
                         </div>
                       </CardContent>
